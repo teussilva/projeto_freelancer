@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Portal de Freelancers</title>
+    <script src="js/login.js" defer></script>
+    <style>
+        /* Reset e Estilos Base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+        }
+        
+        /* Container Principal */
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+            margin: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .message{
+            color: #9c1818;
+            text-align: center;
+            padding-top: 12px;
+            padding-bottom: 12px;
+            display: none;
+        }
+        .message.error{
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Cabeçalho do Login */
+        .login-header {
+            background: #2c3e50;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .login-header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .login-header p {
+            opacity: 0.8;
+        }
+        
+        /* Corpo do Login */
+        .login-body {
+            padding: 30px;
+        }
+        
+        /* Grupos de Formulário */
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px 12px 40px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+            outline: none;
+        }
+        
+        .icon-input {
+            position: relative;
+        }
+        
+        .icon-input i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+        }
+        
+        /* Opções Adicionais */
+        .login-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+        }
+        
+        .remember-me input {
+            margin-right: 5px;
+        }
+        
+        .forgot-password a {
+            color: #3498db;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .forgot-password a:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+        
+        /* Botão de Login */
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+        
+        .btn-login:hover {
+            background: #2980b9;
+        }
+        
+        .btn-login:active {
+            transform: translateY(1px);
+        }
+        
+        /* Divisor */
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        .divider::before, .divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .divider::before {
+            margin-right: 10px;
+        }
+        
+        .divider::after {
+            margin-left: 10px;
+        }
+        
+        /* Redes Sociais */
+        .social-login {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .btn-social {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            border-radius: 5px;
+            font-weight: 600;
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.3s, transform 0.2s;
+        }
+        
+        .btn-social:hover {
+            opacity: 0.9;
+        }
+        
+        .btn-social:active {
+            transform: translateY(1px);
+        }
+        
+        .btn-social i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+        
+        .btn-google {
+            background: #DB4437;
+        }
+        
+        .btn-facebook {
+            background: #4267B2;
+        }
+        
+        .btn-linkedin {
+            background: #0077B5;
+        }
+        
+        /* Rodapé do Login */
+        .login-footer {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #eee;
+            font-size: 14px;
+        }
+        
+        .login-footer a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+        
+        .login-footer a:hover {
+            color: #2980b9;
+            text-decoration: underline;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 480px) {
+            .login-header {
+                padding: 20px;
+            }
+            
+            .login-body {
+                padding: 20px;
+            }
+            
+            .login-options {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+    <!-- Ícones do Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="message" id="message">E-mail ou Senha invalídos (s)</div>
+        <div class="login-header">
+            <h1>Seja Bem-vindo, <span id="primeiro-nome"></span>!</h1>
+            <p>Entre com Email e a senha  para acessar o portal</p>
+        </div>
+        
+        <div class="login-body">
+            <form id="loginForm">
+                <div class="form-group icon-input">
+                    <label for="email">E-mail</label>
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" name="email" id="email" class="form-control" placeholder="seu@email.com" required>
+                </div>
+                
+                <div class="form-group icon-input">
+                    <label for="senha">Senha</label>
+                    <i class="fas fa-lock"></i>
+                    <input type="password" name="senha" id="senha" class="form-control" placeholder="Digite sua senha" required>
+                </div>
+                
+                <div class="login-options">
+                    <div class="remember-me">
+                        <input type="checkbox" id="lembrar">
+                        <label for="lembrar">Lembrar-me</label>
+                    </div>
+                    <div class="forgot-password">
+                        <a href="#">Esqueceu a senha?</a>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-login">Entrar</button>
+            </form>
+        </div>
+        
+        <div class="login-footer">
+            Não tem uma conta? <a href="#">Cadastre-se agora</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar - Portal de Freelancers</title>
+    <link rel="stylesheet" href="css/font-awesome.css">
+    <link rel="stylesheet" type="text/css" href="css/style1.css">
+    <script src="js/registrar.js" defer></script>
+</head>
+<body>
+    <div class="login-container">
+        <div class="message" id="message">Usuário criado com sucesso!</div>
+        <div class="login-header">
+            <h1>Seja Bem-vindo!</h1>
+            <p>Cadastre-se sua conta para acessar o portal</p>
+        </div>
+        
+        <div class="login-body">
+            <form id="registreform">
+                <div class="form-group icon-input">
+                    <label for="nome-completo">Nome Completo</label>
+                    <div class="icon-wrapper">
+                        <i class="fas fa-user"></i> <!-- Ícone de usuário -->
+                    </div>
+                    <input type="text" name="nomeCompleto" id="nome-completo" class="form-control" placeholder="Seu nome completo">
+                </div>
+
+                <div class="form-group icon-input">
+                    <label for="email">E-mail</label>
+                    <div class="icon-wrapper">
+                        <i class="fas fa-envelope"></i> <!-- Ícone de e-mail -->
+                    </div>
+                    <input type="email" name="email" id="email" class="form-control" placeholder="seu@email.com">
+                </div>
+                
+                <!-- Campo de Senha -->
+                <div class="form-group icon-input">
+                    <label for="senha">Senha</label>
+                    <div class="icon-wrapper">
+                        <i class="fas fa-lock"></i> <!-- Ícone de cadeado -->
+                    </div>
+                    <input type="password" name="senha" id="senha" class="form-control" placeholder="Digite sua senha">
+                </div>
+                
+                <!-- Opções de Login -->
+                <div class="login-options">
+                    <div class="remember-me">
+                        <input type="checkbox" id="lembrar">
+                        <label for="lembrar">Lembrar-me</label>
+                    </div>
+                    <div class="forgot-password">
+                        <a href="#">Esqueceu a senha?</a>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn-login" id="btn-registrar">
+                    <i class="fas fa-sign-in-alt">Registrar</i> 
+                </button>
+            </form>
+        </div>
+        
+        <div class="login-footer">
+            Não tem uma conta? <a href="#"><i class="fas fa-user-plus"></i> Cadastre-se agora</a>
+        </div>
+    </div>
+    
+    <script>
+       
+    </script>
+</body>
+</html>
