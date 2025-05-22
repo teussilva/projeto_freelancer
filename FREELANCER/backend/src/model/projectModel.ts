@@ -1,6 +1,10 @@
 import { db } from "./database";
 import { ResultSetHeader } from 'mysql2'
 
+export const getAllprojeto = async(projeto) =>{
+    
+}
+
  export const createProjeto = async(projeto) =>{
     const { titulo, categoria, descricao, orcamento, usuario_id, habilidades, dataPublicacao } = projeto
     const query ='INSERT INTO projetos (titulo, categoria, descricao, orcamento, usuario_id, habilidades, dataPublicacao) VALUES(?,?,?,?,?,?,?)'

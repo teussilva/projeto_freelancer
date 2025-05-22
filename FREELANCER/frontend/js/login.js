@@ -1,33 +1,35 @@
-const setPrimeiroNomeUsuario = function(){
-    let span_primeiro_nome = document.getElementById('primeiro-nome')
-    let getPrimeiroNomeUsuario = localStorage.getItem('user')
-    span_primeiro_nome.innerText = getPrimeiroNomeUsuario.split(' ')[1]
-    // console.log(getPrimeiroNomeUsuario.split(' ')[1])
-}
-const logarUsuario = async function(user){
-    let div_message = document.getElementById('message')
+const loginUsuario = async function(user) {
+     let div_message = document.getElementById('message')
     try {
-        let response = await fetch('http://localhost:3000/api/login', {
+         let response = await fetch('http://localhost:8080/api/login', {
             method: 'POST',
             mode: 'cors',
             headers: { 'content-type': 'application/json' },
             body: JSON.stringify(user)
         })
-        let data = await response.json()
-        localStorage.setItem('loginUser', JSON.stringify(user))
-        if(response.ok){
-            div_message.classList.remove('error')
-            window.location = 'publicarProjeto.html'
-        } else {
+
+        if(response.status !== 200){
             div_message.classList.add('error')
-            // alert(`Erro ao registrar: ${data.error || 'Erro desconhecido'}`)
+            div_message.innerText = 'Email ou Senha inválidos (s)'
+            localStorage.removeItem('token')
+            localStorage.removeItem('usuario')
+            return
         }
+
+        const dados = await response.json()
+        
+        localStorage.setItem('token', dados.token)
+        localStorage.setItem('usuario', JSON.stringify(dados.usuario))
+
+        window.location.href = 'publicarProjeto.html'
+        
     } catch (error) {
-        console.error('Erro ao conectar com o servidor:', error)
-        alert('Erro de conexão com o servidor.')
+        localStorage.removeItem('token')
+        console.error(error + ' Email ou senha invalidos ')
     }
 }
-const validaDadosForm = function() {
+
+const validaDadosForm = function(){
     const input_email = document.getElementById('email')
     const input_senha = document.getElementById('senha')
 
@@ -36,7 +38,7 @@ const validaDadosForm = function() {
         senha: input_senha.value
     }
 
-    if ( dadosForm.email === '' || dadosForm.senha === '') {
+    if (dadosForm.email === ''  || dadosForm.senha === '') {
         alert('Por favor, preencha os campos obrigatórios!!!')
         return
     }
@@ -44,16 +46,41 @@ const validaDadosForm = function() {
     return dadosForm
 }
 const getDadosForm = function(){
-    const login_form = document.getElementById('loginForm')
-    login_form.addEventListener('submit', function(e){
+     let loginForm = document.getElementById('loginForm')
+    loginForm.addEventListener('submit', function(e){
         e.preventDefault()
-         let user = validaDadosForm()
-         if(user){
-            return logarUsuario(user)
-         }else{
-             return false
-         }
+        let user = validaDadosForm()
+        if(user)
+            return loginUsuario(user)
+        else
+           return false
     })
 }
 getDadosForm()
-setPrimeiroNomeUsuario()
+
+window.addEventListener('DOMContentLoaded', function(){
+    let userLogin = localStorage.getItem('usuario')
+    let token = localStorage.getItem('token')
+    if(userLogin && token){
+        localStorage.removeItem('token')        
+        localStorage.removeItem('usuario')
+    }
+    let span_primero_nome = document.getElementById('primeiro-nome')
+    let user = JSON.parse(localStorage.getItem('registreUser'))
+    let nomeCompleto = user.nomeCompleto
+    span_primero_nome.innerText = nomeCompleto.split(' ')[0]
+})
+
+window.addEventListener('load', function(){
+    localStorage.removeItem('token')        
+    localStorage.removeItem('usuario')
+    let span_primero_nome = document.getElementById('primeiro-nome')
+    let user = JSON.parse(localStorage.getItem('registreUser'))
+    if(user && span_primero_nome){
+        let nomeCompleto = user.nomeCompleto
+        span_primero_nome.innerText = nomeCompleto.split(' ')[0]
+    }else{
+        let h1 = document.querySelector('.login-header > h1')
+        h1.innerText = 'Seja Bem-vindo de volta!'
+    }
+})

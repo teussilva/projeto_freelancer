@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel do Freelancer</title>
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+  <header>
+    <h1>Bem-vindo, Freelancer!</h1>
+    <a href="logout.php">Sair</a>
+  </header>
+
+  <main>
+    <section>
+      <h2>Projetos Disponíveis</h2>
+      <!-- Exemplo de projeto vindo do banco -->
+      <div class="projeto">
+        <h3>Site para clínica médica</h3>
+        <p><strong>Categoria:</strong> Web Design</p>
+        <p><strong>Descrição:</strong> Criar um site simples para uma clínica.</p>
+        <p><strong>Valor:</strong> R$ 500,00</p>
+        <form action="candidatar.php" method="POST">
+          <input type="hidden" name="projeto_id" value="1">
+          <textarea name="mensagem" placeholder="Mensagem para o cliente (opcional)" rows="2"></textarea>
+          <button type="submit">Candidatar-se</button>
+        </form>
+      </div>
+    </section>
+
+    <section>
+      <h2>Minhas Candidaturas</h2>
+      <!-- Exemplo de projeto que o freelancer já se candidatou -->
+      <div class="projeto">
+        <h3>Logo para loja virtual</h3>
+        <p>Status: Aguardando resposta</p>
+        <p>Mensagem enviada: Tenho experiência com logos e identidade visual.</p>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

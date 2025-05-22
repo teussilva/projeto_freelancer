@@ -6,14 +6,21 @@
 }
 
 body {
-    background-color: #3b0bd8;
+    background-image: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     padding: 20px;
 }
-
+input,select{
+    cursor: pointer;
+}
+#tipoUsuario{
+    width: 100%;
+    height: 35px;
+    border: 1px solid #ddd;
+}
 .message {
     color: #4a6bff;
     text-align: center;
@@ -141,7 +148,7 @@ body {
 }
 
 /* Rodapé */
-.login-footer {
+ .login-footer {
     padding: 20px;
     text-align: center;
     border-top: 1px solid #eee;
@@ -168,4 +175,4 @@ body {
     .login-body {
         padding: 20px;
     }
-}
+}  

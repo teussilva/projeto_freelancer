@@ -2,8 +2,7 @@ import loginModel from '../model/loginModel';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'
 
-const JWT_SECRET = 'swudeydgdeyggqey772332523@@@3323132312;;;;;'; // a mesma chave do login
-
+const JWT_SECRET = 'swudeydgdeyggqey772332523@@@3323132312;;;;;'; //
 const login = async (req, res) =>{
    try {
       const { email, senha } = req.body
@@ -17,10 +16,10 @@ const login = async (req, res) =>{
 
       const senhaSecreta = await bcrypt.compare(senha, login_usuario.senha_usuario)
       if(!senhaSecreta){
-         return res.status(401).json({ message: 'Senha incorreta' });
+         return res.status(401).json({ message: 'E-mail ou Senha invalídos (s)' });
       }
        const token = jwt.sign(
-         { id: login_usuario.id_usuario, email: login_usuario.email_usuario },
+         { id: login_usuario.id, email: login_usuario.email_usuario },
          JWT_SECRET,
          { expiresIn: '1h' }
       ) 
