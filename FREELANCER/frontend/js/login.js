@@ -1,5 +1,5 @@
 const loginUsuario = async function(user) {
-     let div_message = document.getElementById('message')
+    let div_message = document.getElementById('message')
     try {
          let response = await fetch('http://localhost:8080/api/login', {
             method: 'POST',
@@ -16,12 +16,14 @@ const loginUsuario = async function(user) {
             return
         }
 
-        const dados = await response.json()
-        
-        localStorage.setItem('token', dados.token)
-        localStorage.setItem('usuario', JSON.stringify(dados.usuario))
+        if(response.status === 200){
+          const dados = await response.json()
+          localStorage.setItem('token', dados.token)
+          localStorage.setItem('registreUser', JSON.stringify(dados.usuario))
+          window.location.href = 'publicarProjeto.html'
+        }
 
-        window.location.href = 'publicarProjeto.html'
+       
         
     } catch (error) {
         localStorage.removeItem('token')
@@ -61,7 +63,8 @@ getDadosForm()
 window.addEventListener('DOMContentLoaded', function(){
     let userLogin = localStorage.getItem('usuario')
     let token = localStorage.getItem('token')
-    if(userLogin && token){
+    let registreUser = localStorage.getItem('registreUser')
+    if(userLogin && token && registreUser){
         localStorage.removeItem('token')        
         localStorage.removeItem('usuario')
     }

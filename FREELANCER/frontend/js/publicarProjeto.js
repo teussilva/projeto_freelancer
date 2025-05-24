@@ -1,131 +1,243 @@
-const url = 'http://localhost:8080/api/criar-projeto'
-const inserirProjeto = async function(projeto) {
-  let message = document.getElementById('message')
-  try {
-    const token = localStorage.getItem('token')
-    let response = await fetch(url, {
-      method: 'POST',
-      mode: 'cors',
-      headers: { 
-        'content-type': 'application/json',
-        'Authorization': `Bearer ${token}` 
-      },
-      body: JSON.stringify(projeto)
-    })
+// Variáveis globais
+let projetoEmEdicao = null;
+const token = localStorage.getItem('token');
+const usuario = JSON.parse(localStorage.getItem('registreUser')) || {};
 
-    const dados = await response.json()
-    listaProjeto([dados.projeto])
-    message.classList.add('exibir')
-  } catch (error) {
-    console.error('Erro ao inserir projeto:', error)
-  }
-}
 
-const validaDadosForm = function() {
-  let input_titulo = document.getElementById('titulo')
-  let input_categoria = document.getElementById('categoria')
-  let input_descricao = document.getElementById('descricao')
-  let input_habilidades = document.getElementById('habilidades')
-  let input_orcamento = document.getElementById('valor')
+const formPublicacao = document.getElementById('formPublicacao')
+const message = document.getElementById('message');
+const sectionPublicacoes = document.querySelector('.publicacoes-lista')
 
-  let dadosForm = {
-    titulo: input_titulo.value,
-    categoria: input_categoria.value,
-    descricao: input_descricao.value,
-    habilidades: input_habilidades.value,
-    orcamento: input_orcamento.value,
-  }
+let btn_sair = document.getElementById('li-sair')
 
-  if (dadosForm.titulo.trim() === '' || dadosForm.categoria.trim() === '' || dadosForm.descricao.trim() === '' || dadosForm.habilidades.trim() === '' || dadosForm.orcamento.trim() === '') {
-    alert('Por favor, preencha os campos obrigatórios!!!')
-    return
-  }
-
-  return dadosForm
-}
-
-const listaProjeto = function(projetos){
-    let section_publicacoes_lista = document.querySelector('.publicacoes-lista')
-    // section_publicacoes_lista.innerHTML = ''
-    let h2 = document.createElement('h2')
-    section_publicacoes_lista.appendChild(h2)
-
-    projetos.forEach(function(projeto){
-        h2.innerText = 'Últimas Publicações'
-        let div_publicacao = document.createElement('div')
-        let h3 = document.createElement('h3')
-        let div_publicacao_meta = document.createElement('div')
-        let span_publicado = document.createElement('span')
-        let span_nome_usuario = document.createElement('span')
-        let span_pulicacao_categoria = document.createElement('span')
-        let div_publicacao_descricao = document.createElement('div')
-        let p_descricao_publicacao = document.createElement('p')
-        let p_descricao_publicacao_habilidades = document.createElement('p')
-        let div_publicacao_acoes = document.createElement('div')
-        let button_salvar_projeto = document.createElement('button')
-        let button_deletar_projeto = document.createElement('button')
-        let button_editar_projeto = document.createElement('button')
-
-        let userString = localStorage.getItem('usuario')
-        let user = JSON.parse(userString)
-
-        div_publicacao.setAttribute('class', 'publicacao')
-        div_publicacao_meta.setAttribute('class', 'publicacao-meta')
-        div_publicacao_descricao.setAttribute('class', 'publicacao-descricao')
-        div_publicacao_acoes.setAttribute('class', 'publicacao-acoes')
-        button_salvar_projeto.setAttribute('class', 'btn-outline')
-        button_deletar_projeto.setAttribute('class', 'btn-outline')
-        button_editar_projeto.setAttribute('class', 'btn-outline')
-      
-        section_publicacoes_lista.appendChild(div_publicacao)
-        div_publicacao.appendChild(h3)
-        div_publicacao.appendChild(div_publicacao_meta)
-        div_publicacao_meta.appendChild(span_publicado)
-        div_publicacao_meta.appendChild(span_nome_usuario)
-        div_publicacao_meta.appendChild(span_pulicacao_categoria)
-        div_publicacao.appendChild(div_publicacao_descricao)
-        div_publicacao_descricao.appendChild(p_descricao_publicacao)
-        div_publicacao_descricao.appendChild(p_descricao_publicacao_habilidades)
-        div_publicacao.appendChild(div_publicacao_acoes)
-        div_publicacao_acoes.appendChild(button_salvar_projeto)
-        div_publicacao_acoes.appendChild(button_deletar_projeto)
-        div_publicacao_acoes.appendChild(button_editar_projeto)
-
-        
-        h3.innerText = projeto.titulo
-        span_publicado.innerText = 'Publicado em: ' + projeto.dataPublicacao
-        span_nome_usuario.innerText = 'Por: ' + user.nomeCompleto
-        span_pulicacao_categoria.innerText = projeto.categoria
-        p_descricao_publicacao.innerHTML = projeto.descricao
-        p_descricao_publicacao_habilidades.innerHTML = '<strong>Habilidades requeridas:</strong>'+ ' ' + projeto.habilidades
-        button_salvar_projeto.innerText = 'Salvar'
-        button_deletar_projeto.innerText = 'Deletar Projeto'
-        button_editar_projeto.innerText = 'Editar Projeto'
-    })
-}
-
-const getDadosForm = function() {
-  const publicacao_form = document.getElementById('formPublicacao')
-  publicacao_form.addEventListener('submit', function(e) {
-    e.preventDefault()
-    let user = validaDadosForm()
-    if (user !== null) inserirProjeto(user)
-  })
-}
-
-window.addEventListener('DOMContentLoaded', function(){
-    let span_nomeUsuarioCompleto = document.getElementById('nome-usuario')
-    let user = JSON.parse(localStorage.getItem('usuario'))
-    let token = localStorage.getItem('token')
-    if(!token){
-      window.location.href = 'Home.html'
-      alert('Faça login ou se cadastre para acessar a pagina de projetos!')
-    }else{
-       span_nomeUsuarioCompleto.innerText = user.email
-       console.log(user)
-    }
+btn_sair.addEventListener('click', function(){
+   localStorage.removeItem('registreUser')
+   localStorage.removeItem('token')
+   window.location.href = 'Home.html'
 })
 
-getDadosForm()
-listaProjeto([])
 
+window.addEventListener('DOMContentLoaded', function() {
+    if (!token) {
+        alert('Faça login para acessar esta página')
+        window.location.href = 'login.html';
+        return;
+    }
+
+    document.getElementById('nome-usuario').innerText = usuario.nomeCompleto || usuario.email;
+    carregarProjetos()
+});
+
+const carregarProjetos = async function() {
+    try {
+        sectionPublicacoes.innerHTML = '<div class="loading">Carregando projetos...</div>';
+        
+        const response = await fetch('http://localhost:8080/api/projetos', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) throw new Error('Erro ao carregar projetos');
+        
+        const projetos = await response.json();
+        renderizarProjetos(Array.isArray(projetos) ? projetos : [projetos]);
+    } catch (error) {
+        console.error('Erro:', error);
+        sectionPublicacoes.innerHTML = '<p class="error">Erro ao carregar projetos</p>';
+    }
+};
+
+const renderizarProjetos = function(projetos) {
+    sectionPublicacoes.innerHTML = '<h2>Meus Projetos</h2>';
+    
+    if (projetos.length === 0) {
+        sectionPublicacoes.innerHTML += '<p>Nenhum projeto encontrado</p>';
+        return;
+    }
+
+    projetos.forEach(projeto => {
+        const divPublicacao = document.createElement('div');
+        divPublicacao.className = 'publicacao';
+        
+        divPublicacao.innerHTML = `
+            <h3>${projeto.titulo}</h3>
+            <div class="publicacao-meta">
+                <span>Publicado em: ${formatarData(projeto.dataPublicacao)}</span>
+                <span>Por: ${usuario.email}</span>
+                <span class="publicacao-categoria">${projeto.categoria}</span>
+            </div>
+            <div class="publicacao-descricao">
+                <p>${projeto.descricao}</p>
+                <p><strong>Habilidades requeridas:</strong> ${projeto.habilidades || 'Não especificadas'}</p>
+                <h4><strong>Orçamento:</strong> ${projeto.orcamento ? 'R$ ' + projeto.orcamento : 'A combinar'}</h4>
+            </div>
+            <div class="publicacao-acoes">
+                <button class="btn-outline btn-editar" data-id="${projeto.id}">Editar</button>
+                <button class="btn-outline btn-deletar" data-id="${projeto.id}">Deletar</button>
+            </div>
+        `;
+        
+        sectionPublicacoes.appendChild(divPublicacao);
+    });
+
+    // Adiciona eventos aos botões
+    document.querySelectorAll('.btn-editar').forEach(btn => {
+        btn.addEventListener('click', editarProjeto);
+    });
+
+    document.querySelectorAll('.btn-deletar').forEach(btn => {
+        btn.addEventListener('click', deletarProjeto);
+    });
+};
+
+const enviarFormulario = async function(e) {
+    e.preventDefault();
+    
+    const dadosForm = {
+        titulo: document.getElementById('titulo').value.trim(),
+        categoria: document.getElementById('categoria').value,
+        descricao: document.getElementById('descricao').value.trim(),
+        habilidades: document.getElementById('habilidades').value.trim(),
+        orcamento: formatarOrcamento(document.getElementById('valor').value.trim())
+    };
+
+    try {
+        if (projetoEmEdicao) {
+            await atualizarProjeto(projetoEmEdicao, dadosForm);
+            mostrarMensagem('Projeto atualizado com sucesso!');
+        } else {
+            await criarProjeto(dadosForm);
+            mostrarMensagem('Projeto criado com sucesso!');
+        }
+        
+        resetarFormulario();
+        await carregarProjetos();
+    } catch (error) {
+        console.error('Erro:', error);
+        mostrarMensagem(error.message || 'Erro ao processar solicitação', 'error');
+    }
+};
+
+const criarProjeto = async function(projeto) {
+    const response = await fetch('http://localhost:8080/api/criar-projeto', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(projeto)
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Erro ao criar projeto');
+    }
+}
+
+const editarProjeto = async function(e) {
+    const id = e.target.getAttribute('data-id');
+    
+    try {
+        const response = await fetch(`http://localhost:8080/api/projetos/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.status === 404) {
+         alert('Projeto não encontrado. Pode ter sido removido.', 'error');
+          return;
+       }
+
+        if (!response.ok) throw new Error('Erro ao carregar projeto');
+        
+        const projeto = await response.json();
+        preencherFormulario(projeto);
+        projetoEmEdicao = id;
+        document.querySelector('#formPublicacao button[type="submit"]').textContent = 'Salvar Edição';
+    } catch (error) {
+        console.error('Erro:', error);
+        mostrarMensagem('Erro ao carregar projeto para edição', 'error');
+    }
+}
+
+const atualizarProjeto = async function(id, projeto) {
+    const response = await fetch(`http://localhost:8080/api/projetos/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(projeto)
+    })
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || 'Erro ao atualizar projeto');
+    }
+}
+
+const deletarProjeto = async function(e) {
+    if (!confirm('Tem certeza que deseja deletar este projeto?')) return;
+    
+    const id = e.target.getAttribute('data-id');
+    try {
+        const response = await fetch(`http://localhost:8080/api/projetos/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (!response.ok) throw new Error('Erro ao deletar projeto');
+        
+        mostrarMensagem('Projeto deletado com sucesso!');
+        await carregarProjetos();
+    } catch (error) {
+        console.error('Erro:', error);
+        mostrarMensagem('Erro ao deletar projeto', 'error');
+    }
+}
+
+const preencherFormulario = function(projeto) {
+    document.getElementById('titulo').value = projeto.titulo || '';
+    document.getElementById('categoria').value = projeto.categoria || '';
+    document.getElementById('descricao').value = projeto.descricao || '';
+    document.getElementById('habilidades').value = projeto.habilidades || '';
+    document.getElementById('valor').value = projeto.orcamento ? `R$ ${projeto.orcamento}` : ''
+}
+
+const resetarFormulario = function() {
+    formPublicacao.reset();
+    projetoEmEdicao = null;
+    document.querySelector('#formPublicacao button[type="submit"]').textContent = 'Publicar';
+}
+
+const mostrarMensagem = function(msg, tipo = 'success') {
+    message.textContent = msg;
+    message.className = `message ${tipo}`;
+    message.style.display = 'block';
+    
+    setTimeout(() => {
+        message.style.display = 'none';
+    }, 5000);
+};
+
+const formatarData = function(dataString) {
+    if (!dataString) return '';
+    const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+    return new Date(dataString).toLocaleDateString('pt-BR', options);
+};
+
+const formatarOrcamento = function(valor) {
+    if (!valor || valor.toLowerCase().includes('combinar')) return null;
+    const numero = parseFloat(valor.replace(/[^\d,]/g, '').replace(',', '.'));
+    return isNaN(numero) ? null : numero;
+};
+
+formPublicacao.addEventListener('submit', enviarFormulario);
+
+if (token) {
+    carregarProjetos();
+}

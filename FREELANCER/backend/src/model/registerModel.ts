@@ -1,12 +1,13 @@
 import { db } from "./database"
 import { ResultSetHeader } from 'mysql2'
 
-export const getAllUsuarios = async() =>{
-    const [usuarios] = await db.execute('SELECT * FROM usuarios')
-    return usuarios
+export const getAllUsuarios = async () => {
+   const query = 'SELECT * FROM usuarios'
+   const [rows] = await db.execute(query)
+   return rows
 }
 
-export const createUsuario = async (user) => {
+ export const createUsuario = async (user) => {
     const { nomeCompleto, email, senha, tipoUsuario } = user
     const [rows] = await db.execute<any[]>('SELECT id FROM usuarios WHERE email_usuario = ?', [email])
 
@@ -19,4 +20,7 @@ export const createUsuario = async (user) => {
     return { insertId: result.insertId }
 }
 
-
+export const deletarProjeto = async (id) =>{
+    const query = 'DELETE FROM projetos WHERE id = ?'
+    await db.execute(query, [id])
+}
