@@ -1,7 +1,7 @@
 const loginUsuario = async function(user) {
     let div_message = document.getElementById('message')
     try {
-         let response = await fetch('http://localhost:8080/api/login', {
+        let response = await fetch('http://localhost:8080/api/login', {
             method: 'POST',
             mode: 'cors',
             headers: { 'content-type': 'application/json' },
@@ -17,19 +17,29 @@ const loginUsuario = async function(user) {
         }
 
         if(response.status === 200){
-          const dados = await response.json()
-          localStorage.setItem('token', dados.token)
-          localStorage.setItem('registreUser', JSON.stringify(dados.usuario))
-          window.location.href = 'publicarProjeto.html'
+            const dados = await response.json()
+
+            // Verifica tipo de usuário
+            if (dados.tipoUsuario === 'freelancer') {
+                div_message.classList.add('error')
+                div_message.innerText = 'Acesso permitido apenas para clientes.'
+                div_message.classList.ad('error')
+                localStorage.removeItem('token')
+                localStorage.removeItem('registreUser')
+                window.location.href = 'Home.html'
+                return
+            }
+            localStorage.setItem('token')
+            localStorage.setItem('registreUser', JSON.stringify(dados.usuario))
+            window.location.href = 'publicarProjeto.html'
         }
 
-       
-        
     } catch (error) {
         localStorage.removeItem('token')
-        console.error(error + ' Email ou senha invalidos ')
+        console.error(error + ' Email ou senha inválidos ')
     }
 }
+
 
 const validaDadosForm = function(){
     const input_email = document.getElementById('email')

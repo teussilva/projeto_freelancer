@@ -60,6 +60,5 @@ const getDadosForm = function(){
 getDadosForm()
 
 window.addEventListener('DOMContentLoaded', function(){
-    let token = localStorage.getItem('token')
-    if(token) return localStorage.removeItem('token')
-})  
+    localStorage.clear()
+}) 
